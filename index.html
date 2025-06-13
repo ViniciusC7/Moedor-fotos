@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥩</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2c1810, #1a0e08);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .reset-button {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background: #A0522D;
+            transform: scale(1.05);
+        }
+
+        .image-area {
+            width: 100%;
+            height: 250px;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .image-container {
+            width: 80%;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 3px solid #8B4513;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .selected-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .grind-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #4a3228;
+            border-radius: 15px;
+            border: 2px dashed #8B4513;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-placeholder:hover {
+            background: #5a4238;
+            border-color: #A0522D;
+        }
+
+        .placeholder-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .placeholder-text {
+            color: #ccc;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .grinder-container {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .grinder-body {
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(145deg, #e0e0e0, #c0c0c0);
+            border-radius: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #808080;
+            position: relative;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s ease;
+        }
+
+        .grinder-body:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        .grinder-body:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .grinder-body.grinding {
+            animation: grindPulse 0.2s ease-in-out;
+        }
+
+        @keyframes grindPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .grinder-blade {
+            font-size: 40px;
+            transition: transform 0.1s ease;
+            position: absolute;
+        }
+
+        .grinder-blade.spinning {
+            animation: spin 0.2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .grinder-hole {
+            width: 30px;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .grinder-base {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(145deg, #b0b0b0, #a0a0a0);
+            border-radius: 10px;
+            margin: 10px auto 0;
+            border: 2px solid #808080;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .instruction-text {
+            text-align: center;
+            color: #ccc;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .instruction-text.active {
+            color: #DC143C;
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        .select-button {
+            background: linear-gradient(145deg, #8B4513, #A0522D);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .select-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .grind-button {
+            background: linear-gradient(145deg, #DC143C, #FF1744);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .grind-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        }
+
+        .grind-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .grind-button.active {
+            background: linear-gradient(145deg, #FF6347, #FF7F50);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-container {
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #DC143C, #FF6347);
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .progress-text {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+            animation: fall 2s ease-out forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100px) rotate(360deg);
+            }
+        }
+
+        .shake {
+            animation: shake 0.15s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+            border: 2px solid #DC143C;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .success-message h3 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .success-message button {
+            background: #DC143C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🥩🥩🥩🥩🥩</h1>
+            <button class="reset-button" onclick="resetGrinder()">🔄 Reset</button>
+        </div>
+
+        <div class="image-area">
+            <div id="imageContainer" class="image-container hidden">
+                <img id="selectedImage" class="selected-image" src="" alt="Imagem selecionada">
+                <div id="grindOverlay" class="grind-overlay hidden">
+                    <span id="grindText">Moendo... 0%</span>
+                </div>
+            </div>
+            <div id="imagePlaceholder" class="image-placeholder" onclick="selectImage()">
+                <div class="placeholder-icon">📷</div>
+                <div class="placeholder-text">Clique para escolher uma foto</div>
+            </div>
+        </div>
+
+        <div class="grinder-container">
+            <div id="grinderBody" class="grinder-body" onmousedown="startPress()" onmouseup="endPress()" onmouseleave="endPress()" ontouchstart="startPress()" ontouchend="endPress()">
+                <div id="grinderBlade" class="grinder-blade">⚙️</div>
+                <div class="grinder-hole"></div>
+            </div>
+            <div class="grinder-base"></div>
+        </div>
+
+        <div class="controls">
+            <div id="instructionText" class="instruction-text hidden">
+                👆 Clique e segure no moedor para moer a foto!
+            </div>
+            <button class="select-button" onclick="selectImage()">
+                📁 Escolher Foto
+            </button>
+            <button id="resetBtn" class="reset-button" onclick="resetGrinder()" style="display: none; width: 100%; padding: 15px; font-size: 16px;">
+                🔄 Nova Foto
+            </button>
+        </div>
+
+        <div id="progressContainer" class="progress-container hidden">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div id="progressText" class="progress-text">0% moído</div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+
+    <div id="successMessage" class="success-message hidden">
+        <h3>🥩🥩🥩🥩🥩</h3>
+        <p>Sua foto foi completamente moída! Que tal escolher outra?</p>
+        <br>
+        <button onclick="selectImage(); hideSuccessMessage();">Nova Foto</button>
+        <button onclick="hideSuccessMessage();">OK</button>
+    </div>
+
+    <script>
+        let selectedImage = null;
+        let isGrinding = false;
+        let grindProgress = 0;
+        let pressInterval = null;
+        let isPressed = false;
+
+        const imageContainer = document.getElementById('imageContainer');
+        const imagePlaceholder = document.getElementById('imagePlaceholder');
+        const selectedImageEl = document.getElementById('selectedImage');
+        const grindOverlay = document.getElementById('grindOverlay');
+        const grindText = document.getElementById('grindText');
+        const grinderBlade = document.getElementById('grinderBlade');
+        const grinderBody = document.getElementById('grinderBody');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const fileInput = document.getElementById('fileInput');
+        const successMessage = document.getElementById('successMessage');
+        const instructionText = document.getElementById('instructionText');
+        const resetBtn = document.getElementById('resetBtn');
+
+
+        function selectImage() {
+            fileInput.click();
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImage = e.target.result;
+                    selectedImageEl.src = selectedImage;
+
+                    imageContainer.classList.remove('hidden');
+                    imagePlaceholder.classList.add('hidden');
+
+                    instructionText.classList.remove('hidden');
+                    instructionText.classList.add('active');
+
+                    progressContainer.classList.remove('hidden');
+
+                    resetProgress();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function startPress() {
+            if (!selectedImage || isPressed) return;
+            
+            isPressed = true;
+            grinderBody.classList.add('grinding');
+            grinderBlade.classList.add('spinning');
+
+            pressInterval = setInterval(() => {
+                grindStep();
+            }, 50);
+        }
+
+        function endPress() {
+            if (!isPressed) return;
+            
+            isPressed = false;
+            grinderBody.classList.remove('grinding');
+            grinderBlade.classList.remove('spinning');
+            
+            if (pressInterval) {
+                clearInterval(pressInterval);
+                pressInterval = null;
+            }
+        }
+
+        function grindStep() {
+            if (grindProgress >= 100) return;
+            
+            grindProgress += 1;
+
+            updateProgress();
+
+            const translateY = (grindProgress / 100) * 120; // Move a imagem para baixo
+            const scale = Math.max(0.3, 1 - (grindProgress / 100) * 0.7); // Diminui a imagem
+            selectedImageEl.style.transform = `translateY(${translateY}px) scale(${scale})`;
+
+            if (grindProgress % 10 === 0) {
+                generateParticles();
+            }
+
+            if (grindProgress >= 100) {
+                finishGrinding();
+            }
+        }
+
+        function updateProgress() {
+            grindText.textContent = grindProgress < 100 ? `Moendo... ${grindProgress}%` : 'Moído! 🥩';
+            progressFill.style.width = `${grindProgress}%`;
+            progressText.textContent = `${grindProgress}% moído`;
+            
+            if (grindProgress > 0) {
+                grindOverlay.classList.remove('hidden');
+            }
+        }
+
+        function finishGrinding() {
+            endPress(); 
+
+            instructionText.classList.add('hidden');
+
+            resetBtn.style.display = 'block';
+
+            setTimeout(() => {
+                successMessage.classList.remove('hidden');
+            }, 500);
+        }
+
+        function generateParticles() {
+            const container = document.querySelector('.container');
+            const grinderRect = grinderBody.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const x = (grinderRect.left - containerRect.left) + Math.random() * 120;
+                const y = (grinderRect.bottom - containerRect.top) - 10;
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.width = `${Math.random() * 8 + 4}px`;
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = `hsl(${Math.random() * 30 + 10}, 70%, ${Math.random() * 30 + 40}%)`;
+                
+                container.appendChild(particle);
+
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 2000);
+            }
+        }
+
+        function resetProgress() {
+            grindProgress = 0;
+            grindOverlay.classList.add('hidden');
+            selectedImageEl.style.transform = 'translateY(0) scale(1)';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0% moído';
+        }
+
+        function resetGrinder() {
+
+            endPress();
+            
+            selectedImage = null;
+            grindProgress = 0;
+
+            imageContainer.classList.add('hidden');
+            imagePlaceholder.classList.remove('hidden');
+            instructionText.classList.add('hidden');
+            instructionText.classList.remove('active');
+            resetBtn.style.display = 'none';
+            progressContainer.classList.add('hidden');
+
+            resetProgress();
+
+            fileInput.value = '';
+            
+            hideSuccessMessage();
+        }
+
+        function hideSuccessMessage() {
+            successMessage.classList.add('hidden');
+        }
+
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.closest('.grinder-body')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.grinder-body')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🥩 Moedor Interativo carregado!');
+        });
+    </script>
+</body>
+</html>
